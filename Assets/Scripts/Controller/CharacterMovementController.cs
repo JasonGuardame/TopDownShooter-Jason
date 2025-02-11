@@ -1,15 +1,16 @@
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 
 
 public class CharacterMovementController
 {
     public UnityEvent<Vector2, Bounds> onReceiveMovementInputs;
 
-    [ReadOnly]public float moveSpeed = 10f;
+    public bool destinationReached;
+    public float moveSpeed = 10f;
     private Rigidbody2D rb;
+    private Transform transform;
 
     public void Awake()
     {
@@ -34,10 +35,36 @@ public class CharacterMovementController
         }
     }
 
-    public void Initialize(Rigidbody2D rb, float moveSpeed)
+    public void Initialize(Rigidbody2D rb)
     {
         this.rb = rb;
-        this.moveSpeed = moveSpeed;
+        transform = rb.transform;
+    }
+
+    public void SetSpeed(float speed)
+    {
+        this.moveSpeed = speed;
+    }
+
+    public void MoveCharacterWithDistanceThreshold(Vector3 targetPosition, float hitDistance)
+    {
+        float distance = Vector2.Distance(transform.position, targetPosition);
+
+        if (distance > hitDistance) // Move only if outside stop range
+        {
+            Vector2 direction = (targetPosition - transform.position).normalized;
+            Vector2 newPosition = rb.position + direction * moveSpeed * Time.fixedDeltaTime;
+
+            // Apply movement
+            rb.MovePosition(newPosition);
+
+            destinationReached = false;
+        }
+        else
+        {
+
+            destinationReached = true;
+        }
     }
 
     public void MoveCharacter(Vector2 direction, Bounds bounds)

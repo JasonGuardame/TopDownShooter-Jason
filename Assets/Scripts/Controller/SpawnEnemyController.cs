@@ -1,3 +1,4 @@
+using Controller;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +22,15 @@ public class SpawnEnemyController
     public float curSpawnInterval;
 
     [Header("Current Spawned Enemies")]
-    public List<GameObject> enemySpawned;
+    public List<GameObject> enemySpawned = new List<GameObject>();
 
     private Bounds bounds;
+    private PlayerControllerManager currentPlayerTarget;
+
+    public void SetCurrentPlayer(PlayerControllerManager newPlayer)
+    {
+        currentPlayerTarget = newPlayer;
+    }
 
     public void Initialize(GameObject newEnemyPrefab, BoxCollider2D newPlayerMovementArea, EnemyDatabase newEnemyDatabase)
     {
@@ -51,6 +58,16 @@ public class SpawnEnemyController
 
     }
 
+    public void ResetSpawn()
+    {
+        enemySpawned.ForEach(x =>
+        {
+            x.SetActive(false);
+        });
+
+        curSpawnInterval = 0.0f;
+    }
+
     void SpawnEnemy()
     {
         GameObject enemyGo = null;
@@ -70,7 +87,16 @@ public class SpawnEnemyController
         }
 
         EnemyControllerManager enemy = enemyGo.GetComponent<EnemyControllerManager>();
-        enemy.InitializeInfo(enemyDatabase.GetNewCharacterInfo());
+        enemy.OnEnemyHitEvent.AddListener(UiManager.instance.killCountView.IncrementKillCount);
+        enemy.OnEnemyHitVfxEvent.AddListener(SpawnEnemyVisualEffects);
+        enemy.InitializeInfo(enemyDatabase.GetNewCharacterInfo(), currentPlayerTarget);
+    }
+
+    void SpawnEnemyVisualEffects(EnemyControllerManager enemyOwner)
+    {
+        Vector2 position = enemyOwner.transform.position;
+        GameManager.instance.spawnVfxController.SpawnEffects(position, enemyOwner.onDamagedVFX);
+        GameManager.instance.spawnVfxController.SpawnEffects(position, enemyOwner.onDeathVFX);
     }
 
     Vector2 GetRandomSpawnPosition()

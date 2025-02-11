@@ -15,7 +15,7 @@ MonoBehaviour:
   enemyInfoBase:
   - health: 1
     maxHealth: 1
-    speed: 5
+    speed: 2
   - health: 1
     maxHealth: 1
-    speed: 8
+    speed: 4

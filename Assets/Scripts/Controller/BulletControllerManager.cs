@@ -39,6 +39,6 @@ public class BulletControllerManager : MonoBehaviour
             enemy.OnBulletHit(); // Apply damage
         }
 
-        Destroy(gameObject); // Destroy the bullet on impact
+        Destroy(this.gameObject); // Destroy the bullet on impact
     }
 }

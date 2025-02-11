@@ -10,6 +10,7 @@ public class UiManager : MonoBehaviour
     public VirtualJoystick movementJs, fireJs;
 
     public HealthBarView healthBarView;
+    public KillCountView killCountView;
 
     [Header("Panels")]
     public GameObject InGameControlsPanel;
@@ -34,6 +35,8 @@ public class UiManager : MonoBehaviour
     {
         healthBarView.UpdateMaxHealth(player.characterInfo.MaxHealth);
         healthBarView.UpdateCurHealth(player.characterInfo.Health);
+
+        player.OnReceiveDamageEvent.AddListener(healthBarView.UpdateCurHealth);
     }
 
     public void ShowMainMenuPanel()
@@ -56,5 +59,12 @@ public class UiManager : MonoBehaviour
     {
         InGameControlsPanel.SetActive(false);
         InGameInfoPanel.SetActive(false);
+    }
+
+    public void ResetInGameUi()
+    {
+        movementJs.OnPointerUp(null);
+        fireJs.OnPointerUp(null);
+        killCountView.ResetKillCount();
     }
 }

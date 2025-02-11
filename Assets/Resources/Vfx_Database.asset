@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 040460da49f229a4e84d69c69a9c8115, type: 3}
+  m_Name: Vfx_Database
+  m_EditorClassIdentifier: 
+  vfxModels:
+  - name: PlayerDead
+    vfx: {fileID: 4220754947537329081, guid: 529ef3550db966e4287ee325ea8c7ec3, type: 3}
+  - name: PlayerDamage
+    vfx: {fileID: 7306212512810625992, guid: e5ef21e5d6c17f944b1037028bd9da71, type: 3}
+  - name: EnemyDead
+    vfx: {fileID: 4432368932539014281, guid: 52d50f69b0d71bc4a936d1f3af68fe9d, type: 3}
+  - name: EnemyDamage
+    vfx: {fileID: 8900124961580163601, guid: bbf15154b1c8f3e4aa8a4722929f1ac0, type: 3}

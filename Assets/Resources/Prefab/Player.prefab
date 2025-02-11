@@ -134,10 +134,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45bf2fac907e64e43857e02136e5584d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnReceiveDamageEvent:
+    m_PersistentCalls:
+      m_Calls: []
   movementBounds: {fileID: 0}
+  onDeathVFX: PlayerDead
+  onDamagedVFX: PlayerDamage
   characterInfo:
     health: 10
-    maxHealth: 0
+    maxHealth: 10
     speed: 5
   bulletPrefab: {fileID: 1844648057433846890, guid: 9b4f2b29ac906844ca5f5ba09073957f, type: 3}
 --- !u!50 &5737132121505520400

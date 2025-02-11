@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     public EnemyDatabase enemyDatabase;
+    public VisualEffectsDatabase visualEffectsDatabase;
 
     public GameObject PlayerPrefab;
     public GameObject EnemyPrefab;
@@ -15,8 +16,9 @@ public class GameManager : MonoBehaviour
     public bool inGame;
 
     public BoxCollider2D movementBounds;
-
+    private PlayerControllerManager currentPlayer;
     private SpawnEnemyController spawnEnemyController;
+    public SpawnVfxController spawnVfxController;
 
     public void Awake()
     {
@@ -29,6 +31,9 @@ public class GameManager : MonoBehaviour
     {
         spawnEnemyController = new SpawnEnemyController();
         spawnEnemyController.Initialize(EnemyPrefab, movementBounds, enemyDatabase);
+
+        spawnVfxController = new SpawnVfxController();
+        spawnVfxController.database = visualEffectsDatabase;
 
         LoadUiSetup();
     }
@@ -51,13 +56,42 @@ public class GameManager : MonoBehaviour
         UiManager.instance.HideMainMenuPanel();
         UiManager.instance.ShowInGamePanels();
 
-        GameObject playerGo = GameObject.Instantiate(PlayerPrefab, Vector2.zero, Quaternion.identity);
+        GameObject playerGo = GameObject.Instantiate(PlayerPrefab, new Vector2(1,1), Quaternion.identity);
 
-        PlayerControllerManager player = playerGo.GetComponent<PlayerControllerManager>();
-        player.movementBounds = movementBounds;
+        currentPlayer = playerGo.GetComponent<PlayerControllerManager>();
+        currentPlayer.movementBounds = movementBounds;
 
-        UiManager.instance.SetupInGame(player);
+        UiManager.instance.SetupInGame(currentPlayer);
+        currentPlayer.OnReceiveDamageEvent.AddListener(CheckEndGame);
+        spawnEnemyController.SetCurrentPlayer(currentPlayer);
+
         inGame = true;
+
+        //spawnEnemyController.Update(Time.deltaTime);
+    }
+
+    public void CheckEndGame(float remainingHp)
+    {
+        spawnVfxController.SpawnEffects(currentPlayer.transform.position, currentPlayer.onDamagedVFX);
+        if (remainingHp > 0.0f) return;
+
+        EndGame();
+    }
+
+    void EndGame()
+    {
+        spawnVfxController.SpawnEffects(currentPlayer.transform.position, currentPlayer.onDeathVFX);
+
+        currentPlayer.DestroyCharacter();
+        currentPlayer = null;
+
+        UiManager.instance.ResetInGameUi();
+        UiManager.instance.ShowMainMenuPanel();
+        UiManager.instance.HideInGamePanels();
+
+        spawnEnemyController.ResetSpawn();
+
+        inGame = false;
     }
 
     public void QuitGame()

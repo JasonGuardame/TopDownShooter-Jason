@@ -161,10 +161,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ca9a6d5ed1849b45ad2d8aa6f910210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnEnemyHitEvent:
+    m_PersistentCalls:
+      m_Calls: []
   enemyInfo:
     health: 1
     maxHealth: 1
     speed: 5
+  targetPlayer: {fileID: 0}
+  onDeathVFX: EnemyDead
+  onDamagedVFX: EnemyDamage
   hitDistance: 1
   interval: 1.5
   curInterval: 0

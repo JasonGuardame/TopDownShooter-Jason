@@ -1,14 +1,21 @@
 using Terresquall;
 using UnityEngine;
 using Model;
+using UnityEngine.Events;
 
 namespace Controller
 {
     public class PlayerControllerManager : MonoBehaviour
     {
+        public UnityEvent<float> OnReceiveDamageEvent;
+
         private VirtualJoystick movementJoyStick, fireJoyStick;
 
         public BoxCollider2D movementBounds;
+
+        [Header("VFX")]
+        public string onDeathVFX;
+        public string onDamagedVFX;
 
         [Header("Character Setup")]
         public CharacterInfoBase characterInfo;
@@ -35,23 +42,11 @@ namespace Controller
             Initialize();
         }
 
-        private void OnDestroy()
-        {
-            if(movement != null)
-            {
-                movement.OnDestroy();
-            }
-
-            if(bulletFire != null)
-            {
-                bulletFire.OnDestroy();
-            }
-        }
-
         void Initialize()
         {
             movement = new CharacterMovementController();
-            movement.Initialize(GetComponent<Rigidbody2D>(), characterInfo.Speed);
+            movement.Initialize(GetComponent<Rigidbody2D>());
+            movement.SetSpeed(characterInfo.Speed);
 
             bulletFire = new BulletFireController();
             bulletFire.Initialize(this.transform, bulletPrefab, 10.0f, fireJoyStick);
@@ -69,6 +64,27 @@ namespace Controller
             movement.MoveCharacter(movementAxis, bounds);
 
             bulletFire.Update(Time.deltaTime);
+        }
+
+        public void ReceiveDamage(int damage)
+        {
+            int remainingHp = characterInfo.ReceiveDamage(damage);
+            OnReceiveDamageEvent?.Invoke(remainingHp);
+        }
+
+        public void DestroyCharacter()
+        {
+            if (movement != null)
+            {
+                movement.OnDestroy();
+            }
+
+            if (bulletFire != null)
+            {
+                bulletFire.OnDestroy();
+            }
+
+            Destroy(this.gameObject);
         }
     }
 }
