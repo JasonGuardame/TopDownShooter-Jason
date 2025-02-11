@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
 using System.Linq;
+using UnityEngine.Events;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.EnhancedTouch;
@@ -15,6 +16,8 @@ namespace Terresquall {
     [System.Serializable]
     [RequireComponent(typeof(Image),typeof(RectTransform))]
     public class VirtualJoystick:MonoBehaviour {
+
+        public UnityEvent OnFireJsPointerDownEvent, OnFireJsPointerUpEvent;
 
         [Tooltip("The unique ID for this joystick. Needs to be unique.")]
         public int ID;
@@ -44,8 +47,8 @@ namespace Terresquall {
         }
 
         [Header("Settings")]
-        [Tooltip("Allows the Button to stay where it was left when touch stops.")]
-        public bool stayOnPosition = false;
+        [Tooltip("Enables UnityEvent on Button Down.")]
+        public bool onClickActionEnabled = false;
         [Tooltip("Disables the joystick if not on a mobile platform.")]
         public bool onlyOnMobile = true;
         [Tooltip("Colour of the control stick while it is being dragged.")]
@@ -215,17 +218,23 @@ namespace Terresquall {
             currentPointerId = data.pointerId;
             SetPosition(data.position);
             controlStick.color = dragColor;
+
+            if (onClickActionEnabled)
+            {
+                OnFireJsPointerDownEvent?.Invoke();
+            }
         }
 
         // What happens when we stop pressing down on the element.
         public void OnPointerUp(PointerEventData data) {
-            if (!stayOnPosition)
-            {
-                desiredPosition = transform.position;
-            }
-
+            desiredPosition = transform.position;
             controlStick.color = originalColor;
             currentPointerId = -2;
+
+            if (onClickActionEnabled)
+            {
+                OnFireJsPointerUpEvent?.Invoke();
+            }
 
             //Snaps the joystick back to its original position
             /*if (snapToOrigin && (Vector2)transform.position != origin) {
